@@ -30,6 +30,15 @@ public class ReservationsController : ControllerBase
         return reservation;
     }
 
+    [HttpGet("traveler/{travelerId:length(24)}")]
+    public async Task<List<Reservation>> GetByTraveler(string travelerId)
+    {
+        var reservations = await _reservationsService.GetAsync();
+
+        return reservations.Where(r => r.travelerId == travelerId).ToList();
+    }
+
+
     [HttpPost]
     public async Task<IActionResult> Post(Reservation newReservation)
     {
