@@ -64,6 +64,32 @@ public class ReservationsController : ControllerBase
             return NotFound();
         }
 
+        DateTime oldReservationDate = reservation.date;
+        DateTime updateDate = DateTime.Now;
+
+        TimeSpan updateDifference = oldReservationDate - updateDate;
+
+        if (updateDifference.Days < 5)
+        {
+            return BadRequest("Reservation can only be updated at least 5 days before the reserved date.");
+        }
+
+        DateTime bookingDate = DateTime.Now;
+        DateTime reservationDate = updatedReservation.date;
+
+        TimeSpan difference = reservationDate - bookingDate;
+
+        if (difference.Days > 30)
+        {
+            return BadRequest("Reservation date must be within 30 days of booking date. You may cancel this reservation and place another later.");
+        }
+
+
+        if (updatedReservation.ticketCount > 4)
+        {
+            return BadRequest("Maximum number of tickets per reservation is four.");
+        }
+
         updatedReservation.Id = reservation.Id;
 
         await _reservationsService.UpdateAsync(id, updatedReservation);
@@ -79,6 +105,16 @@ public class ReservationsController : ControllerBase
         if (reservation is null)
         {
             return NotFound();
+        }
+
+        DateTime oldReservationDate = reservation.date;
+        DateTime deleteDate = DateTime.Now;
+
+        TimeSpan deleteDifference = oldReservationDate - deleteDate;
+
+        if (deleteDifference.Days < 5)
+        {
+            return BadRequest("Reservation can only be deleted at least 5 days before the reserved date.");
         }
 
         await _reservationsService.RemoveAsync(id);
