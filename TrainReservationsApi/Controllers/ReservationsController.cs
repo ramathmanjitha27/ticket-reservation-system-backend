@@ -38,6 +38,21 @@ public class ReservationsController : ControllerBase
         return reservations.Where(r => r.travelerId == travelerId).ToList();
     }
 
+    [HttpGet("traveler/{travelerId:length(24)}/history")]
+    public async Task<List<Reservation>> GetTravelHistory(string travelerId)
+    {
+        var reservations = await _reservationsService.GetAsync();
+
+        return reservations.Where(r => r.travelerId == travelerId && r.date < DateTime.Now).ToList();
+    }
+
+    [HttpGet("traveler/{travelerId:length(24)}/upcoming")]
+    public async Task<List<Reservation>> GetUpcomingReservations(string travelerId)
+    {
+        var reservations = await _reservationsService.GetAsync();
+
+        return reservations.Where(r => r.travelerId == travelerId && r.date >= DateTime.Now).ToList();
+    }
 
     [HttpPost]
     public async Task<IActionResult> Post(Reservation newReservation)
