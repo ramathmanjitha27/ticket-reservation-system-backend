@@ -30,9 +30,49 @@ public class ReservationsController : ControllerBase
         return reservation;
     }
 
+    [HttpGet("traveler/{travelerId:length(24)}")]
+    public async Task<List<Reservation>> GetByTraveler(string travelerId)
+    {
+        var reservations = await _reservationsService.GetAsync();
+
+        return reservations.Where(r => r.travelerId == travelerId).ToList();
+    }
+
+    [HttpGet("traveler/{travelerId:length(24)}/history")]
+    public async Task<List<Reservation>> GetTravelHistory(string travelerId)
+    {
+        var reservations = await _reservationsService.GetAsync();
+
+        return reservations.Where(r => r.travelerId == travelerId && r.date < DateTime.Now).ToList();
+    }
+
+    [HttpGet("traveler/{travelerId:length(24)}/upcoming")]
+    public async Task<List<Reservation>> GetUpcomingReservations(string travelerId)
+    {
+        var reservations = await _reservationsService.GetAsync();
+
+        return reservations.Where(r => r.travelerId == travelerId && r.date >= DateTime.Now).ToList();
+    }
+
     [HttpPost]
     public async Task<IActionResult> Post(Reservation newReservation)
     {
+        DateTime bookingDate = DateTime.Now;
+        DateTime reservationDate = newReservation.date;
+
+        TimeSpan difference = reservationDate - bookingDate;
+
+        if (difference.Days > 30)
+        {
+            return BadRequest("Reservation date must be within 30 days of booking date.");
+        }
+
+
+        if (newReservation.ticketCount > 4)
+        {
+            return BadRequest("Maximum number of tickets per reservation is four.");
+        }
+
         await _reservationsService.CreateAsync(newReservation);
 
         return CreatedAtAction(nameof(Get), new { id = newReservation.Id }, newReservation);
@@ -46,6 +86,32 @@ public class ReservationsController : ControllerBase
         if (reservation is null)
         {
             return NotFound();
+        }
+
+        DateTime oldReservationDate = reservation.date;
+        DateTime updateDate = DateTime.Now;
+
+        TimeSpan updateDifference = oldReservationDate - updateDate;
+
+        if (updateDifference.Days < 5)
+        {
+            return BadRequest("Reservation can only be updated at least 5 days before the reserved date.");
+        }
+
+        DateTime bookingDate = DateTime.Now;
+        DateTime reservationDate = updatedReservation.date;
+
+        TimeSpan difference = reservationDate - bookingDate;
+
+        if (difference.Days > 30)
+        {
+            return BadRequest("Reservation date must be within 30 days of booking date. You may cancel this reservation and place another later.");
+        }
+
+
+        if (updatedReservation.ticketCount > 4)
+        {
+            return BadRequest("Maximum number of tickets per reservation is four.");
         }
 
         updatedReservation.Id = reservation.Id;
@@ -63,6 +129,16 @@ public class ReservationsController : ControllerBase
         if (reservation is null)
         {
             return NotFound();
+        }
+
+        DateTime oldReservationDate = reservation.date;
+        DateTime deleteDate = DateTime.Now;
+
+        TimeSpan deleteDifference = oldReservationDate - deleteDate;
+
+        if (deleteDifference.Days < 5)
+        {
+            return BadRequest("Reservation can only be deleted at least 5 days before the reserved date.");
         }
 
         await _reservationsService.RemoveAsync(id);
