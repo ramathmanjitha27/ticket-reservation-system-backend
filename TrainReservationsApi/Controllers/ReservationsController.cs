@@ -33,6 +33,11 @@ public class ReservationsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(Reservation newReservation)
     {
+        if (newReservation.ticketCount > 4)
+        {
+            return BadRequest("Maximum number of tickets per reservation is four.");
+        }
+
         await _reservationsService.CreateAsync(newReservation);
 
         return CreatedAtAction(nameof(Get), new { id = newReservation.Id }, newReservation);
