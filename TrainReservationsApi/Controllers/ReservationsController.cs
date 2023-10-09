@@ -33,6 +33,17 @@ public class ReservationsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post(Reservation newReservation)
     {
+        DateTime bookingDate = DateTime.Now;
+        DateTime reservationDate = newReservation.date;
+
+        TimeSpan difference = reservationDate - bookingDate;
+
+        if (difference.Days > 30)
+        {
+            return BadRequest("Reservation date must be within 30 days of booking date.");
+        }
+
+
         if (newReservation.ticketCount > 4)
         {
             return BadRequest("Maximum number of tickets per reservation is four.");
