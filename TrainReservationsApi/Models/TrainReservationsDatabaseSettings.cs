@@ -8,6 +8,7 @@
 
         public string ReservationsCollectionName { get; set; } = null!;
 
+        public string? StaffCollectionName { get; set; } = null!;
         public string TrainsCollectionName { get; set; } = null!;
     }
 }

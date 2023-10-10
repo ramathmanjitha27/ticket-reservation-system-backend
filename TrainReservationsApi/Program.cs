@@ -10,6 +10,8 @@ builder.Services.Configure<TrainReservationsDatabaseSettings>(
     builder.Configuration.GetSection("TrainReservationsDatabase"));
 
 builder.Services.AddSingleton<ReservationsService>();
+builder.Services.AddSingleton<StaffProfileService>();
+
 builder.Services.AddSingleton<TrainService>();
 
 var app = builder.Build();
