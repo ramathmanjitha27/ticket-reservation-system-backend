@@ -12,6 +12,7 @@ builder.Services.Configure<TrainReservationsDatabaseSettings>(
 builder.Services.AddSingleton<ReservationsService>();
 builder.Services.AddSingleton<StaffProfileService>();
 builder.Services.AddSingleton<AuthService>();
+builder.Services.AddSingleton<TrainService>();
 
 var app = builder.Build();
 
