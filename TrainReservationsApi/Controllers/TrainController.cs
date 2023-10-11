@@ -60,6 +60,7 @@ public class TrainController : ControllerBase
             return NoContent();
         }
 
+        // Check the availability of trains based on the travler's departure station, arrival station, date, ticket class and count criteria
         [HttpGet("availability")]
         public async Task<List<Train>> GetAvailableTrains(string departure, string arrival, string date, string ticketClass, int ticketCount)
         {
