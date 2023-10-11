@@ -59,6 +59,55 @@ public class TrainController : ControllerBase
 
             return NoContent();
         }
+
+        // Check the availability of trains based on the travler's departure station, arrival station, date, ticket class and count criteria
+        [HttpGet("availability")]
+        public async Task<List<Train>> GetAvailableTrains(string departure, string arrival, string date, string ticketClass, int ticketCount)
+        {
+            var trains = await _trainService.GetAllAsync();
+
+            var availableTrains = new List<Train>();
+
+            foreach (var train in trains)
+            {
+                bool isAvailable = true;
+
+                // Check if the train is published and active for reservations
+                if (train.isPublished is false || train.isActive is false)
+                {
+                    isAvailable = false;           
+                }
+
+                // Check if the train departs and arrives at the required stations
+                var schedule = train.schedules.FirstOrDefault(s => s.station == departure);
+                if (schedule is null || schedule.departureTime.CompareTo(train.schedules.FirstOrDefault(s => s.station == arrival)?.arrivalTime) >= 0)
+                {
+                    isAvailable = false;
+                }
+
+                // Check if the train is available on the chosen date
+                var dayOfWeek = DateTime.Parse(date).DayOfWeek.ToString();
+                if (!train.availableDates.Contains(dayOfWeek))
+                {
+                    isAvailable = false;
+                }
+
+                // Check if the desired number of tickets are available in the desired ticket class
+                var ticketAvailability = train.ticketsAvailability.FirstOrDefault(t => t.trainClass == ticketClass);
+                if (ticketAvailability is null || ticketAvailability.tickets - ticketAvailability.reserved < ticketCount)
+                {
+                    isAvailable = false;
+                }
+
+                if (isAvailable)
+                {
+                    availableTrains.Add(train);
+                }
+            }
+      
+            return availableTrains;
     }
+
+}
 
 
