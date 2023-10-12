@@ -14,5 +14,7 @@
 
         public string? StaffCollectionName { get; set; } = null!;
         public string TrainsCollectionName { get; set; } = null!;
+
+        public string TravelersCollectionName { get; set; } = null!;
     }
 }
