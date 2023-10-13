@@ -92,14 +92,33 @@ public class TrainController : ControllerBase
                     isAvailable = false;
                 }
 
-                // Check if the desired number of tickets are available in the desired ticket class
-                var ticketAvailability = train.ticketsAvailability.FirstOrDefault(t => t.trainClass == ticketClass);
-                if (ticketAvailability is null || ticketAvailability.tickets - ticketAvailability.reserved < ticketCount)
-                {
+            // Check if the desired number of tickets are available in the desired ticket class
+            int? ticketsAvailable = null;
+            int? ticketsReserved = null;
+            switch (ticketClass)
+            {
+                case "First":
+                    ticketsAvailable = train.firstClassTickets;
+                    ticketsReserved = train.firstClassTicketsReserved;
+                    break;
+                case "Second":
+                    ticketsAvailable = train.secondClassTickets;
+                    ticketsReserved = train.secondClassTicketsReserved;
+                    break;
+                case "Third":
+                    ticketsAvailable = train.thirdClassTickets;
+                    ticketsReserved = train.thirdClassTicketsReserved;
+                    break;
+                default:
                     isAvailable = false;
-                }
+                    break;
+            }
+            if (ticketsAvailable is null || ticketsReserved is null || ticketsAvailable - ticketsReserved < ticketCount)
+            {
+                isAvailable = false;
+            }
 
-                if (isAvailable)
+            if (isAvailable)
                 {
                     availableTrains.Add(train);
                 }
