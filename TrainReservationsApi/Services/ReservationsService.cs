@@ -1,4 +1,9 @@
-﻿using TrainReservationsApi.Models;
+﻿/// <summary>
+/// The ReservationsService class provides methods to interact with the reservations collection in the MongoDB database.
+/// </summary>
+/// <author>IT19051758</author>
+
+using TrainReservationsApi.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
