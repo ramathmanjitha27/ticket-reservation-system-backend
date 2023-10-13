@@ -70,8 +70,15 @@ namespace TrainReservationsApi.Controllers;
             return NoContent();
         }
 
-        // Check the availability of trains based on the traveler's departure station, arrival station, date, ticket class, and count criteria
-        [HttpGet("availability")]
+
+    /// <summary>
+    /// Returns a list of available trains based on the user's input of departure station, arrival station, date, ticket class, and number of tickets needed.
+    /// </summary>
+    /// <returns>A list of available trains.</returns>
+    /// <author>IT19051758</author>
+
+    // Check the availability of trains based on the traveler's departure station, arrival station, date, ticket class, and count criteria
+    [HttpGet("availability")]
         public async Task<List<Train>> GetAvailableTrains(string departure, string arrival, string date, string ticketClass, int ticketCount)
         {
             var trains = await _trainService.GetAllAsync();
@@ -105,15 +112,33 @@ namespace TrainReservationsApi.Controllers;
                     isAvailable = false;
                 }
 
-                // Check if the desired number of tickets are available in the desired ticket class
-                // If not enough tickets available, it's marked as unavailable.
-                var ticketAvailability = train.ticketsAvailability.FirstOrDefault(t => t.trainClass == ticketClass);
-                if (ticketAvailability is null || ticketAvailability.tickets - ticketAvailability.reserved < ticketCount)
-                {
+            // Check if the desired number of tickets are available in the desired ticket class
+            int? ticketsAvailable = null;
+            int? ticketsReserved = null;
+            switch (ticketClass)
+            {
+                case "First":
+                    ticketsAvailable = train.firstClassTickets;
+                    ticketsReserved = train.firstClassTicketsReserved;
+                    break;
+                case "Second":
+                    ticketsAvailable = train.secondClassTickets;
+                    ticketsReserved = train.secondClassTicketsReserved;
+                    break;
+                case "Third":
+                    ticketsAvailable = train.thirdClassTickets;
+                    ticketsReserved = train.thirdClassTicketsReserved;
+                    break;
+                default:
                     isAvailable = false;
-                }
+                    break;
+            }
+            if (ticketsAvailable is null || ticketsReserved is null || ticketsAvailable - ticketsReserved < ticketCount)
+            {
+                isAvailable = false;
+            }
 
-                if (isAvailable)
+            if (isAvailable)
                 {
                     availableTrains.Add(train);
                 }

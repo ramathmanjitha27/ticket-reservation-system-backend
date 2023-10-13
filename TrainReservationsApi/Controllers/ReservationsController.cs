@@ -1,4 +1,9 @@
-﻿using TrainReservationsApi.Models;
+﻿/// <summary>
+/// The ReservationsController class handles HTTP requests related to reservations.
+/// </summary> 
+/// <author>IT19051758</author>
+
+using TrainReservationsApi.Models;
 using TrainReservationsApi.Services;
 using Microsoft.AspNetCore.Mvc;
 

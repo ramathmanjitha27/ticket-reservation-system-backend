@@ -1,4 +1,9 @@
-﻿using MongoDB.Bson;
+﻿/// <summary> 
+/// The Reservation class represents a train reservation record in the MongoDB database. 
+/// </summary>
+/// <author>IT19051758</author>
+
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace TrainReservationsApi.Models;
