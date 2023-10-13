@@ -14,8 +14,6 @@ namespace TrainReservationsApi.Models
         public string arrivalStation { get; set; }  // Arrival station
         public bool isActive { get; set; }  // Indicates if the train is active
         public bool isPublished { get; set; }  // Indicates if the train is published
-        public string departureTime { get; set; }  // Departure time
-        public string arrivalTime { get; set; }  // Arrival time
         public List<string> availableDates { get; set; }  // List of available dates
         public int firstClassTickets { get; set; }  // Number of first class tickets available
         public int secondClassTickets { get; set; }  // Number of second class tickets available
