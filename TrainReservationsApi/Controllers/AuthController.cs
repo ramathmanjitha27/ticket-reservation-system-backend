@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/**
+ * This is the AuthController class.
+ * This class controlls the authentication of the Traveler.
+ * It has used JWT for the authentication
+ *
+ * <p>Bugs: None
+ *
+ * @author W.A.P.K.V. Wickramasinghe
+ */
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +24,8 @@ namespace TrainReservationsApi.Controllers
     {
         IConfiguration _configuration;
         private readonly TravelerServices _travelerServices;
+
+        //Constructor
         public AuthController(IConfiguration configuration, TravelerServices travelerServices)
         {
             this._configuration = configuration;
@@ -23,6 +34,7 @@ namespace TrainReservationsApi.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        //Authentication Controller
         public async Task<IActionResult> Authenticate(string Email, string Password)
         {
             var authenticatedTraveler = await _travelerServices.Login(Email, Password);

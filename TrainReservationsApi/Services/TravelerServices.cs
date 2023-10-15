@@ -1,4 +1,13 @@
-﻿using Microsoft.Extensions.Options;
+﻿/**
+ * This is the TravelerServices class.
+ * This class provide the services to  TravelersController class to manage
+ * the Traveler GET,POST,DELETE,UPDATE, ACCOUNT ACTIVATION, DEACTIVATION
+ *
+ * <p>Bugs: None
+ *
+ * @author W.A.P.K.V. Wickramasinghe
+ */
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using TrainReservationsApi.Models;
 
@@ -7,7 +16,7 @@ namespace TrainReservationsApi.Services
     public class TravelerServices
     {
         private readonly IMongoCollection<Traveler> _travelerColloction;
-
+        //DB Connection
         public TravelerServices(IOptions<TrainReservationsDatabaseSettings> TrainReservationsDatabaseSettings)
         {
             var mongoClient = new MongoClient(TrainReservationsDatabaseSettings.Value.ConnectionString);
@@ -40,7 +49,7 @@ namespace TrainReservationsApi.Services
         //delete traveler
         public async Task RemoveTravelerAsync(string id) =>
             await _travelerColloction.DeleteOneAsync(x => x.Id == id);
-
+        //login traveler
         public async Task<Traveler?> Login(string email, string password)
         {
             var traveler = await _travelerColloction.Find(t => t.Email == email).FirstOrDefaultAsync();
@@ -52,6 +61,25 @@ namespace TrainReservationsApi.Services
             }
 
             return null;
+        }
+        //Travaler Account Activation
+        public async Task<Traveler> ActivateAccount(string travelerId)
+        {
+            var filter = Builders<Traveler>.Filter.Eq(t => t.Id, travelerId);
+            var update = Builders<Traveler>.Update.Set(t => t.IsActive, true);
+            var options = new FindOneAndUpdateOptions<Traveler> { ReturnDocument = ReturnDocument.After };
+
+            return await _travelerColloction.FindOneAndUpdateAsync(filter, update, options);
+        }
+
+        //Travaler Account Deactivation
+        public async Task<Traveler> DeactivateAccount(string travelerId)
+        {
+            var filter = Builders<Traveler>.Filter.Eq(t => t.Id, travelerId);
+            var update = Builders<Traveler>.Update.Set(t => t.IsActive, false);
+            var options = new FindOneAndUpdateOptions<Traveler> { ReturnDocument = ReturnDocument.After };
+
+            return await _travelerColloction.FindOneAndUpdateAsync(filter, update, options);
         }
     }
 }

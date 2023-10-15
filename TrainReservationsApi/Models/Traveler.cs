@@ -1,4 +1,11 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿/**
+ * This is the class of traveler. 
+ *
+ * <p>Bugs: None
+ *
+ * @author W.A.P.K.V. Wickramasinghe
+ */
+using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 
 namespace TrainReservationsApi.Models
