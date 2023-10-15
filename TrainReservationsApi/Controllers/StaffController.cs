@@ -5,6 +5,7 @@ using TrainReservationsApi.Services;
 
 namespace TrainReservationsApi.Controllers
 {
+    // Exposing the function to be accessed by this url
     [Route("api/staff")]
     [ApiController]
     public class StaffController : ControllerBase
@@ -12,6 +13,7 @@ namespace TrainReservationsApi.Controllers
         private readonly StaffProfileService _staffService;
         private Staff _staff = new Staff();
 
+        // Constructor initializes the StaffController with a reference to the StaffProfileService,
         public StaffController(StaffProfileService staffService) =>
             _staffService = staffService;
 
@@ -21,6 +23,7 @@ namespace TrainReservationsApi.Controllers
         public async Task<List<Staff>> GetAllStaff() =>
             await _staffService.GetAllStaffMembers();
 
+        // Get staff details by unique identifier (id).
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStaffDetails(string id)
         {
@@ -52,7 +55,7 @@ namespace TrainReservationsApi.Controllers
             return CreatedAtAction(nameof(GetAllStaff), new { id = staff.Id }, staff);
         }
 
-        // update staff member details
+        // Update staff member details by unique identifier (id).
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStaff(string id, [FromBody] Staff staff)
         {
@@ -68,7 +71,7 @@ namespace TrainReservationsApi.Controllers
         }
 
 
-        // delete staff member
+        // Delete a staff member by unique identifier (id).
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> DeleteStaff(string id)
         {
