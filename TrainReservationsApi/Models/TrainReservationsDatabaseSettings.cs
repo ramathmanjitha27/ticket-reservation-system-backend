@@ -1,4 +1,11 @@
-﻿namespace TrainReservationsApi.Models
+﻿/**
+ *the clas of TrainReservationsDatabaseSettings
+ *
+ * <p>Bugs: None
+ *
+ * @author All
+ */
+namespace TrainReservationsApi.Models
 {
     public class TrainReservationsDatabaseSettings
     {

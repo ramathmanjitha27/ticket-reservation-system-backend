@@ -1,4 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/**
+ * This is the TravelersController class.
+ * This class controlls the Traveler GET,POST,DELETE,UPDATE
+ * ACCOUNT ACTIVATION, DEACTIVATION
+ *
+ * <p>Bugs: None
+ *
+ * @author W.A.P.K.V. Wickramasinghe
+ */
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrainReservationsApi.Models;
@@ -11,6 +20,8 @@ namespace TrainReservationsApi.Controllers
     public class TravelersController : ControllerBase
     {
         private readonly TravelerServices _travelerServices;
+
+        //Constructor
         public TravelersController(TravelerServices travelerServices)
         {
             _travelerServices = travelerServices;
@@ -78,6 +89,28 @@ namespace TrainReservationsApi.Controllers
             await _travelerServices.RemoveTravelerAsync(id);
 
             return Ok("Deleted Successfully.");
+        }
+
+        [HttpPost("{id}/activate")]
+        public async Task<IActionResult> ActivateAccount(string id)
+        {
+            var updatedTraveler = await _travelerServices.ActivateAccount(id);
+            if (updatedTraveler == null)
+            {
+                return NotFound("Traveler not found");
+            }
+            return Ok(updatedTraveler);
+        }
+
+        [HttpPost("{id}/deactivate")]
+        public async Task<IActionResult> DeactivateAccount(string id)
+        {
+            var updatedTraveler = await _travelerServices.DeactivateAccount(id);
+            if (updatedTraveler == null)
+            {
+                return NotFound("Traveler not found");
+            }
+            return Ok(updatedTraveler);
         }
 
         //[HttpPost("login")]
