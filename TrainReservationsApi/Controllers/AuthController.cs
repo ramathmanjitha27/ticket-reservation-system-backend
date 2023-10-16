@@ -35,13 +35,6 @@ namespace TrainReservationsApi.Controllers
             _staffProfileService = staffServices;
         }
 
-        //public AuthController(IConfiguration configuration, StaffProfileService staffServices, TravelerServices travelerServices)
-        //{
-        //    this._configuration = configuration;
-        //    _staffProfileService = staffServices;
-        //    _travelerServices = travelerServices;
-        //}
-
         [AllowAnonymous]
         [HttpPost]
         //Authentication Controller
@@ -95,6 +88,12 @@ namespace TrainReservationsApi.Controllers
         //Authentication Controller of Staff
         public async Task<IActionResult> AuthenticateStaff([FromBody] LoginModel login)
         {
+
+            if (login == null || string.IsNullOrEmpty(login.Email) || string.IsNullOrEmpty(login.Password))
+            {
+                return BadRequest("Email and Password cannot be null");
+            }
+
             string Email = login.Email;
             string Password = login.Password;
 
@@ -105,8 +104,8 @@ namespace TrainReservationsApi.Controllers
                 var existingToken = HttpContext.Request.Headers["Authorization"].ToString();
                 if (!string.IsNullOrEmpty(existingToken))
                 {
-                    // A token already exists, you can return an appropriate response
-                    return Ok("You are already logged in.");
+                    // A token already exists, you can return an appropriate 
+                    return Ok(new AuthResponseModel { Message = "User is already authenticated!", Status = 200, Success = true, Token = existingToken, User = authenticatedStaff });
                 }
 
                 // Authentication successful, return staff data or a token
@@ -136,10 +135,10 @@ namespace TrainReservationsApi.Controllers
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken = tokenHandler.WriteToken(token);
-                return Ok(jwtToken);
+                return Ok(new AuthResponseModel { Message = "User Authenticated Successfully!", Status = 200, Success = true, Token = jwtToken, User = authenticatedStaff });
             }
 
-            return Unauthorized("Invalid email or password");
+            return Unauthorized(new AuthResponseModel { Message = "Invalid Email or Passoword", Status = 401, Success = false });
         }
     }
 }

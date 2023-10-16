@@ -83,7 +83,7 @@ namespace TrainReservationsApi.Controllers
             try
             {
                 await _staffService.RemoveStaffMember(id);
-                return Ok("Staff is deleted!");
+                return Ok("Staff member is deleted!");
             }
             catch (Exception ex)
             {
