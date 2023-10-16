@@ -47,5 +47,23 @@ namespace TrainReservationsApi.Services
         // Remove a staff member's profile from the MongoDB collection based on their unique identifier.
         public async Task RemoveStaffMember(string id) =>
             await _staffCollection.DeleteOneAsync(x => x.Id == id);
+
+
+        public async Task<Staff?> LoginStaff(string email, string password)
+        {
+            var staff = await _staffCollection.Find(t => t.Email == email).FirstOrDefaultAsync();
+
+            // Check if the traveler exists and if the password is valid
+            //if (staff != null && BCrypt.Net.BCrypt.Verify(password, staff.Password))
+            //{
+            //    return staff;
+            //}
+
+            if(staff != null && staff.Password == password){
+                return staff;
+            }
+
+            return null;
+        }
     }
 }

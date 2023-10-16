@@ -78,6 +78,7 @@ app.UseRouting();
 
 app.UseCors("AllowAllOrigins");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

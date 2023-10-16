@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TrainReservationsApi.Models;
 using TrainReservationsApi.Services;
@@ -19,11 +20,13 @@ namespace TrainReservationsApi.Controllers
 
 
         // get all staff members
+        [Authorize]
         [HttpGet]
         public async Task<List<Staff>> GetAllStaff() =>
             await _staffService.GetAllStaffMembers();
 
         // Get staff details by unique identifier (id).
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStaffDetails(string id)
         {
@@ -56,6 +59,7 @@ namespace TrainReservationsApi.Controllers
         }
 
         // Update staff member details by unique identifier (id).
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStaff(string id, [FromBody] Staff staff)
         {
