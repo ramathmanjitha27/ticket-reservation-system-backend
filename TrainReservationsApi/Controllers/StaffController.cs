@@ -76,6 +76,7 @@ namespace TrainReservationsApi.Controllers
 
 
         // Delete a staff member by unique identifier (id).
+        [Authorize]
         [HttpDelete("{id:length(24)}")]
         public async Task<IActionResult> DeleteStaff(string id)
         {
