@@ -73,6 +73,12 @@ public class ReservationsController : ControllerBase
 
         TimeSpan difference = reservationDate - bookingDate;
 
+        // Check if the reservation date is not past
+        if (reservationDate < bookingDate)
+        {
+            return BadRequest("Reservation date cannot be a past date.");
+        }
+
         // Check if the reservation is made within 30 days of booking date
         if (difference.Days > 30)
         {
@@ -100,11 +106,14 @@ public class ReservationsController : ControllerBase
         {
             return NotFound();
         }
+        
 
         DateTime oldReservationDate = reservation.date;
         DateTime updateDate = DateTime.Now;
 
+
         TimeSpan updateDifference = oldReservationDate - updateDate;
+     
 
         // Check if the update is made at least 5 days before the reserved date
         if (updateDifference.Days < 5)
@@ -114,6 +123,12 @@ public class ReservationsController : ControllerBase
 
         DateTime bookingDate = DateTime.Now;
         DateTime reservationDate = updatedReservation.date;
+
+        // Check if the reservation date is not past
+        if (reservationDate < bookingDate)
+        {
+            return BadRequest("Reservation date cannot be a past date.");
+        }
 
         TimeSpan difference = reservationDate - bookingDate;
 
