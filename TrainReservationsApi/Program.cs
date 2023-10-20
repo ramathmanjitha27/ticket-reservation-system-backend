@@ -1,3 +1,10 @@
+/**
+ *This contains logic to start the server and listen for the requests and also configure the application.
+ *
+ * <p>Bugs: None
+ *
+ * @author All
+ */
 using TrainReservationsApi.Models;
 using TrainReservationsApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +14,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//Authentication with JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -70,6 +78,7 @@ app.UseRouting();
 
 app.UseCors("AllowAllOrigins");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
