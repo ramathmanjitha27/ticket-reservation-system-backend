@@ -38,7 +38,7 @@ public class ReservationsController : ControllerBase
     }
 
     // Get all the reservation records (travel details) of a particular traveler
-    [HttpGet("traveler/{travelerId:length(24)}")]
+    [HttpGet("traveler/{travelerId}")]
     public async Task<List<Reservation>> GetByTraveler(string travelerId)
     {
         var reservations = await _reservationsService.GetAsync();
@@ -47,7 +47,7 @@ public class ReservationsController : ControllerBase
     }
 
     // Get all the past reservation records (history) of a particular traveler
-    [HttpGet("traveler/{travelerId:length(24)}/history")]
+    [HttpGet("traveler/{travelerId}/history")]
     public async Task<List<Reservation>> GetTravelHistory(string travelerId)
     {
         var reservations = await _reservationsService.GetAsync();
@@ -56,7 +56,7 @@ public class ReservationsController : ControllerBase
     }
 
     // Get all the upcoming reservation records of a particular traveler
-    [HttpGet("traveler/{travelerId:length(24)}/upcoming")]
+    [HttpGet("traveler/{travelerId}/upcoming")]
     public async Task<List<Reservation>> GetUpcomingReservations(string travelerId)
     {
         var reservations = await _reservationsService.GetAsync();
