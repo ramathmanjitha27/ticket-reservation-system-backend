@@ -31,14 +31,14 @@ public class Reservation
     public int ticketCount { get; set; }
 
     // Class of tickets reserved
-    public int ticketClass { get; set; }
+    public string ticketClass { get; set; }
 
     // Id of the train reserved
     [BsonRepresentation(BsonType.ObjectId)]
     public string trainId { get; set; } = null!;
 
     // Id of the traveler
-    [BsonRepresentation(BsonType.ObjectId)]
+    // [BsonRepresentation(BsonType.ObjectId)]
     public string travelerId { get; set; } = null!;
 
 }

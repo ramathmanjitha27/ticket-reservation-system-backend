@@ -38,7 +38,7 @@ public class ReservationsController : ControllerBase
     }
 
     // Get all the reservation records (travel details) of a particular traveler
-    [HttpGet("traveler/{travelerId:length(24)}")]
+    [HttpGet("traveler/{travelerId}")]
     public async Task<List<Reservation>> GetByTraveler(string travelerId)
     {
         var reservations = await _reservationsService.GetAsync();
@@ -47,7 +47,7 @@ public class ReservationsController : ControllerBase
     }
 
     // Get all the past reservation records (history) of a particular traveler
-    [HttpGet("traveler/{travelerId:length(24)}/history")]
+    [HttpGet("traveler/{travelerId}/history")]
     public async Task<List<Reservation>> GetTravelHistory(string travelerId)
     {
         var reservations = await _reservationsService.GetAsync();
@@ -56,7 +56,7 @@ public class ReservationsController : ControllerBase
     }
 
     // Get all the upcoming reservation records of a particular traveler
-    [HttpGet("traveler/{travelerId:length(24)}/upcoming")]
+    [HttpGet("traveler/{travelerId}/upcoming")]
     public async Task<List<Reservation>> GetUpcomingReservations(string travelerId)
     {
         var reservations = await _reservationsService.GetAsync();
@@ -72,6 +72,12 @@ public class ReservationsController : ControllerBase
         DateTime reservationDate = newReservation.date;
 
         TimeSpan difference = reservationDate - bookingDate;
+
+        // Check if the reservation date is not past
+        if (reservationDate < bookingDate)
+        {
+            return BadRequest("Reservation date cannot be a past date.");
+        }
 
         // Check if the reservation is made within 30 days of booking date
         if (difference.Days > 30)
@@ -100,11 +106,14 @@ public class ReservationsController : ControllerBase
         {
             return NotFound();
         }
+        
 
         DateTime oldReservationDate = reservation.date;
         DateTime updateDate = DateTime.Now;
 
+
         TimeSpan updateDifference = oldReservationDate - updateDate;
+     
 
         // Check if the update is made at least 5 days before the reserved date
         if (updateDifference.Days < 5)
@@ -114,6 +123,12 @@ public class ReservationsController : ControllerBase
 
         DateTime bookingDate = DateTime.Now;
         DateTime reservationDate = updatedReservation.date;
+
+        // Check if the reservation date is not past
+        if (reservationDate < bookingDate)
+        {
+            return BadRequest("Reservation date cannot be a past date.");
+        }
 
         TimeSpan difference = reservationDate - bookingDate;
 

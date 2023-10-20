@@ -94,6 +94,7 @@ namespace TrainReservationsApi.Controllers;
                 if (train.isPublished is false || train.isActive is false)
                 {
                     isAvailable = false;
+                    continue;
                 }
 
                 // Check if the train departs and arrives at the required stations
@@ -102,6 +103,7 @@ namespace TrainReservationsApi.Controllers;
                 if (schedule is null || schedule.departureTime.CompareTo(train.schedules.FirstOrDefault(s => s.station == arrival)?.arrivalTime) >= 0)
                 {
                     isAvailable = false;
+                    continue;
                 }
 
                 // Check if the train is available on the chosen date
@@ -110,35 +112,37 @@ namespace TrainReservationsApi.Controllers;
                 if (!train.availableDates.Contains(dayOfWeek))
                 {
                     isAvailable = false;
+                    continue;
                 }
 
-            // Check if the desired number of tickets are available in the desired ticket class
-            int? ticketsAvailable = null;
-            int? ticketsReserved = null;
-            switch (ticketClass)
-            {
-                case "First":
-                    ticketsAvailable = train.firstClassTickets;
-                    ticketsReserved = train.firstClassTicketsReserved;
-                    break;
-                case "Second":
-                    ticketsAvailable = train.secondClassTickets;
-                    ticketsReserved = train.secondClassTicketsReserved;
-                    break;
-                case "Third":
-                    ticketsAvailable = train.thirdClassTickets;
-                    ticketsReserved = train.thirdClassTicketsReserved;
-                    break;
-                default:
+                // Check if the desired number of tickets are available in the desired ticket class
+                int? ticketsAvailable = null;
+                int? ticketsReserved = null;
+                switch (ticketClass)
+                {
+                    case "First Class":
+                        ticketsAvailable = train.firstClassTickets;
+                        ticketsReserved = train.firstClassTicketsReserved;
+                        break;
+                    case "Second Class":
+                        ticketsAvailable = train.secondClassTickets;
+                        ticketsReserved = train.secondClassTicketsReserved;
+                        break;
+                    case "Third Class":
+                        ticketsAvailable = train.thirdClassTickets;
+                        ticketsReserved = train.thirdClassTicketsReserved;
+                        break;
+                    default:
+                        isAvailable = false;
+                        break;
+                }
+                if (ticketsAvailable is null || ticketsReserved is null || ticketsAvailable - ticketsReserved < ticketCount)
+                {
                     isAvailable = false;
-                    break;
-            }
-            if (ticketsAvailable is null || ticketsReserved is null || ticketsAvailable - ticketsReserved < ticketCount)
-            {
-                isAvailable = false;
-            }
+                    continue;
+                }
 
-            if (isAvailable)
+                if (isAvailable)
                 {
                     availableTrains.Add(train);
                 }
@@ -176,5 +180,61 @@ namespace TrainReservationsApi.Controllers;
 
             return NoContent();
         }
+
+    /// <summary>
+    /// Updates the ticket count after reservation add, update and delete. 
+    /// </summary>    
+    /// <author>IT19051758</author>    
+    [HttpPut("updateCount/{id:length(24)}")]
+    public async Task<IActionResult> UpdateReservedTickets(string id, string ticketClass, int ticketCount, bool ticketAction)
+    {
+        var train = await _trainService.GetByIdAsync(id);
+
+        if (train is null)
+        {
+            return NotFound();
+        }
+
+
+        switch (ticketClass)
+        {
+            case "First Class":
+                if (ticketAction)
+                {
+                    train.firstClassTicketsReserved = (train.firstClassTicketsReserved ?? 0) + ticketCount;
+                }
+                else
+                {
+                    train.firstClassTicketsReserved = Math.Max((train.firstClassTicketsReserved ?? 0) - ticketCount, 0);
+                }
+                break;
+            case "Second Class":
+                if (ticketAction)
+                {
+                    train.secondClassTicketsReserved = (train.secondClassTicketsReserved ?? 0) + ticketCount;
+                }
+                else
+                {
+                    train.secondClassTicketsReserved = Math.Max((train.secondClassTicketsReserved ?? 0) - ticketCount, 0);
+                }
+                break;
+            case "Third Class":
+                if (ticketAction)
+                {
+                    train.thirdClassTicketsReserved = (train.thirdClassTicketsReserved ?? 0) + ticketCount;
+                }
+                else
+                {
+                    train.thirdClassTicketsReserved = Math.Max((train.thirdClassTicketsReserved ?? 0) - ticketCount, 0);
+                }
+                break;
+            default:
+                return BadRequest("Invalid ticket class.");
+        }
+
+        await _trainService.UpdateAsync(id, train);
+
+        return NoContent();
     }
+}
 
