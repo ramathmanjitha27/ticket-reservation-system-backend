@@ -180,5 +180,61 @@ namespace TrainReservationsApi.Controllers;
 
             return NoContent();
         }
+
+    /// <summary>
+    /// Updates the ticket count after reservation add, update and delete. 
+    /// </summary>    
+    /// <author>IT19051758</author>    
+    [HttpPut("updateCount/{id:length(24)}")]
+    public async Task<IActionResult> UpdateReservedTickets(string id, string ticketClass, int ticketCount, bool ticketAction)
+    {
+        var train = await _trainService.GetByIdAsync(id);
+
+        if (train is null)
+        {
+            return NotFound();
+        }
+
+
+        switch (ticketClass)
+        {
+            case "First Class":
+                if (ticketAction)
+                {
+                    train.firstClassTicketsReserved = (train.firstClassTicketsReserved ?? 0) + ticketCount;
+                }
+                else
+                {
+                    train.firstClassTicketsReserved = Math.Max((train.firstClassTicketsReserved ?? 0) - ticketCount, 0);
+                }
+                break;
+            case "Second Class":
+                if (ticketAction)
+                {
+                    train.secondClassTicketsReserved = (train.secondClassTicketsReserved ?? 0) + ticketCount;
+                }
+                else
+                {
+                    train.secondClassTicketsReserved = Math.Max((train.secondClassTicketsReserved ?? 0) - ticketCount, 0);
+                }
+                break;
+            case "Third Class":
+                if (ticketAction)
+                {
+                    train.thirdClassTicketsReserved = (train.thirdClassTicketsReserved ?? 0) + ticketCount;
+                }
+                else
+                {
+                    train.thirdClassTicketsReserved = Math.Max((train.thirdClassTicketsReserved ?? 0) - ticketCount, 0);
+                }
+                break;
+            default:
+                return BadRequest("Invalid ticket class.");
+        }
+
+        await _trainService.UpdateAsync(id, train);
+
+        return NoContent();
     }
+}
 
