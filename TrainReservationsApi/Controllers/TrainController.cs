@@ -57,7 +57,7 @@ namespace TrainReservationsApi.Controllers;
            
             await _trainService.UpdateAsync(id, updatedTrain);
 
-            return NoContent();
+            return Ok("Successs");
         }
 
         // Deletes a train by its ID.
@@ -158,6 +158,7 @@ namespace TrainReservationsApi.Controllers;
         public async Task<ActionResult> SetTrainActiveStatus(string id)
         {
             var existingTrain = await _trainService.GetByIdAsync(id);
+            var status = "";
 
             if (existingTrain == null)
             {
@@ -165,21 +166,25 @@ namespace TrainReservationsApi.Controllers;
             }
 
             // Check if the train should be set as inactive based on ticket reservations.
-            if (existingTrain.firstClassTicketsReserved <= 0 &&
-                existingTrain.secondClassTicketsReserved <= 0 &&
-                existingTrain.thirdClassTicketsReserved <= 0)
-            {
-                existingTrain.isActive = false; // Mark as inactive.
-            }
-            else
+            if (existingTrain.firstClassTicketsReserved > 0 &&
+                existingTrain.secondClassTicketsReserved > 0 &&
+                existingTrain.thirdClassTicketsReserved >0 )
             {
                 existingTrain.isActive = true; // Mark as active.
+                status = "NOT_CANCELLED";
+        }
+            else
+            {
+                existingTrain.isActive = false; // Mark as inactive.
+                status = "CANCELLED";
+         
+
             }
 
             await _trainService.UpdateAsync(id, existingTrain);
 
-            return NoContent();
-        }
+            return Ok(status);
+    }
 
     /// <summary>
     /// Updates the ticket count after reservation add, update and delete. 
