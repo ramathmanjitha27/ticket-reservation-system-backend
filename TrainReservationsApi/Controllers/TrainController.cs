@@ -79,7 +79,7 @@ namespace TrainReservationsApi.Controllers;
 
     // Check the availability of trains based on the traveler's departure station, arrival station, date, ticket class, and count criteria
     [HttpGet("availability")]
-        public async Task<List<Train>> GetAvailableTrains(string departure, string arrival, string date, string ticketClass, int ticketCount)
+        public async Task<List<Train>> GetAvailableTrains(AvailabilitySearch newSearch)
         {
             var trains = await _trainService.GetAllAsync();
 
@@ -99,8 +99,8 @@ namespace TrainReservationsApi.Controllers;
 
                 // Check if the train departs and arrives at the required stations
                 // If not departing and arriving correctly, it's marked as unavailable.
-                var schedule = train.schedules.FirstOrDefault(s => s.station == departure);
-                if (schedule is null || schedule.departureTime.CompareTo(train.schedules.FirstOrDefault(s => s.station == arrival)?.arrivalTime) >= 0)
+                var schedule = train.schedules.FirstOrDefault(s => s.station == newSearch.departure);
+                if (schedule is null || schedule.departureTime.CompareTo(train.schedules.FirstOrDefault(s => s.station == newSearch.arrival)?.arrivalTime) >= 0)
                 {
                     isAvailable = false;
                     continue;
@@ -108,7 +108,7 @@ namespace TrainReservationsApi.Controllers;
 
                 // Check if the train is available on the chosen date
                 // If not available on the chosen date, it's marked as unavailable.
-                var dayOfWeek = DateTime.Parse(date).DayOfWeek.ToString();
+                var dayOfWeek = DateTime.Parse(newSearch.date).DayOfWeek.ToString();
                 if (!train.availableDates.Contains(dayOfWeek))
                 {
                     isAvailable = false;
@@ -118,7 +118,7 @@ namespace TrainReservationsApi.Controllers;
                 // Check if the desired number of tickets are available in the desired ticket class
                 int? ticketsAvailable = null;
                 int? ticketsReserved = null;
-                switch (ticketClass)
+                switch (newSearch.ticketClass)
                 {
                     case "First Class":
                         ticketsAvailable = train.firstClassTickets;
@@ -136,7 +136,7 @@ namespace TrainReservationsApi.Controllers;
                         isAvailable = false;
                         break;
                 }
-                if (ticketsAvailable is null || ticketsReserved is null || ticketsAvailable - ticketsReserved < ticketCount)
+                if (ticketsAvailable is null || ticketsReserved is null || ticketsAvailable - ticketsReserved < newSearch.ticketCount)
                 {
                     isAvailable = false;
                     continue;
@@ -186,9 +186,9 @@ namespace TrainReservationsApi.Controllers;
     /// </summary>    
     /// <author>IT19051758</author>    
     [HttpPut("updateCount/{id:length(24)}")]
-    public async Task<IActionResult> UpdateReservedTickets(string id, string ticketClass, int ticketCount, bool ticketAction)
+    public async Task<IActionResult> UpdateReservedTickets(ticketUpdate countUpdate)
     {
-        var train = await _trainService.GetByIdAsync(id);
+        var train = await _trainService.GetByIdAsync(countUpdate.id);
 
         if (train is null)
         {
@@ -196,43 +196,43 @@ namespace TrainReservationsApi.Controllers;
         }
 
 
-        switch (ticketClass)
+        switch (countUpdate.ticketClass)
         {
             case "First Class":
-                if (ticketAction)
+                if (countUpdate.ticketAction)
                 {
-                    train.firstClassTicketsReserved = (train.firstClassTicketsReserved ?? 0) + ticketCount;
+                    train.firstClassTicketsReserved = (train.firstClassTicketsReserved ?? 0) + countUpdate.ticketCount;
                 }
                 else
                 {
-                    train.firstClassTicketsReserved = Math.Max((train.firstClassTicketsReserved ?? 0) - ticketCount, 0);
+                    train.firstClassTicketsReserved = Math.Max((train.firstClassTicketsReserved ?? 0) - countUpdate.ticketCount, 0);
                 }
                 break;
             case "Second Class":
-                if (ticketAction)
+                if (countUpdate.ticketAction)
                 {
-                    train.secondClassTicketsReserved = (train.secondClassTicketsReserved ?? 0) + ticketCount;
+                    train.secondClassTicketsReserved = (train.secondClassTicketsReserved ?? 0) + countUpdate.ticketCount;
                 }
                 else
                 {
-                    train.secondClassTicketsReserved = Math.Max((train.secondClassTicketsReserved ?? 0) - ticketCount, 0);
+                    train.secondClassTicketsReserved = Math.Max((train.secondClassTicketsReserved ?? 0) - countUpdate.ticketCount, 0);
                 }
                 break;
             case "Third Class":
-                if (ticketAction)
+                if (countUpdate.ticketAction)
                 {
-                    train.thirdClassTicketsReserved = (train.thirdClassTicketsReserved ?? 0) + ticketCount;
+                    train.thirdClassTicketsReserved = (train.thirdClassTicketsReserved ?? 0) + countUpdate.ticketCount;
                 }
                 else
                 {
-                    train.thirdClassTicketsReserved = Math.Max((train.thirdClassTicketsReserved ?? 0) - ticketCount, 0);
+                    train.thirdClassTicketsReserved = Math.Max((train.thirdClassTicketsReserved ?? 0) - countUpdate.ticketCount, 0);
                 }
                 break;
             default:
                 return BadRequest("Invalid ticket class.");
         }
 
-        await _trainService.UpdateAsync(id, train);
+        await _trainService.UpdateAsync(countUpdate.id, train);
 
         return NoContent();
     }
