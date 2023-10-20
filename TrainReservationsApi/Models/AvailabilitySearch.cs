@@ -1,10 +1,4 @@
-﻿
-
-using MongoDB.Bson.Serialization.Attributes;
-
-
-using MongoDB.Bson;
-/// <summary> 
+﻿/// <summary> 
 /// The Availability class represents a train avaialability search criteria. 
 /// </summary>
 /// <author>IT19051758</author>
@@ -20,8 +14,7 @@ namespace TrainReservationsApi.Models
         // Arrival station of the reservation
         public string arrival { get; set; } = null!;
 
-        // Date of train reservation 
-        [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
+        // Date of train reservation       
         public string date { get; set; } = null!;
 
         // Class of tickets reserved
