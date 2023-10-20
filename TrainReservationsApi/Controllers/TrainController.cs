@@ -78,7 +78,7 @@ namespace TrainReservationsApi.Controllers;
     /// <author>IT19051758</author>
 
     // Check the availability of trains based on the traveler's departure station, arrival station, date, ticket class, and count criteria
-    [HttpGet("availability")]
+    [HttpPost("availability")]
         public async Task<List<Train>> GetAvailableTrains(AvailabilitySearch newSearch)
         {
             var trains = await _trainService.GetAllAsync();
